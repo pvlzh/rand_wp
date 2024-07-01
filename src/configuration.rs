@@ -1,10 +1,9 @@
 use std::{fs, path::Path};
 use serde::{Serialize, Deserialize};
-
 use crate::ApplicationError;
 
 /// Initializing app configuration
-pub fn init() -> Result<AppConfig, ConfigError> {
+pub fn init() -> Result<AppConfig, ConfigurationError> {
     let config: AppConfig;
     
     let config_path = Path::new(".config");
@@ -21,25 +20,28 @@ pub fn init() -> Result<AppConfig, ConfigError> {
     return Ok(config);
 }
 
+/// Application configuration
 #[derive(Serialize, Deserialize)]
 pub struct AppConfig {
     pub image: ImageConfig,
     pub job: JobConfig,
 }
 
+/// Background image configuration
 #[derive(Serialize, Deserialize)]
 pub struct ImageConfig {
     pub category: String,
     pub resolution: String,
 }
 
+/// Job scheduler configuration
 #[derive(Serialize, Deserialize)]
 pub struct JobConfig {
-    pub interval: u32,
+    pub interval_sec: u64,
 }
 
+/// Implementation of the default behavior for the type AppConfig
 impl Default for AppConfig {
-
     /// Initialize default app configuration
     fn default() -> Self {
         Self { 
@@ -48,7 +50,7 @@ impl Default for AppConfig {
                 resolution: String::from("1920x1080"),
             }, 
             job: JobConfig {
-                interval: 600
+                interval_sec: 600,
             } 
         }
     }
@@ -56,40 +58,45 @@ impl Default for AppConfig {
 
 
 /// Configuration errors
-pub enum ConfigError {
+pub enum ConfigurationError {
     /// Configuration is invalid
     InvalidConfiguration(String),
     IoError(String),
 }
 
-impl From<ConfigError> for ApplicationError {
-    fn from(error: ConfigError) -> Self {
-        ApplicationError { message: match error {
-            ConfigError::InvalidConfiguration(message) => message,
-            ConfigError::IoError(message) => message,
-        } }
+/// Convert ConfigurationError into ApplicationError
+impl From<ConfigurationError> for ApplicationError {
+    fn from(error: ConfigurationError) -> Self {
+        let error = match error {
+            ConfigurationError::InvalidConfiguration(message) => message,
+            ConfigurationError::IoError(message) => message,
+        };
+        Self(error.to_string())
     }
 }
 
-impl From<std::io::Error> for ConfigError {
+/// Convert io Error into ConfigurationError
+impl From<std::io::Error> for ConfigurationError {
     fn from(value: std::io::Error) -> Self {
         Self::IoError(value.to_string())
     }
 }
 
-impl From<toml::de::Error> for ConfigError {
+/// Convert deserialization Error into ConfigurationError
+impl From<toml::de::Error> for ConfigurationError {
     fn from(error: toml::de::Error) -> Self {
         Self::InvalidConfiguration(error.message().to_string())
     }
 }
-
-impl From<toml::ser::Error> for ConfigError {
+/// Convert serialization Error into ConfigurationError
+impl From<toml::ser::Error> for ConfigurationError {
     fn from(error: toml::ser::Error) -> Self {
         Self::InvalidConfiguration(error.to_string())
     }
 }
 
-impl From<String> for ConfigError {
+/// Convert String into ConfigurationError
+impl From<String> for ConfigurationError {
     fn from(message: String) -> Self {
         Self::InvalidConfiguration(message)
     }
