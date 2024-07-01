@@ -1,4 +1,4 @@
-use super::{BackgroundSetter, Result};
+use super::{WallpaperSetter, Result};
 use std::ffi::OsStr;
 use std::os::windows::ffi::OsStrExt;
 use winapi::ctypes::c_void;
@@ -9,10 +9,10 @@ use winapi::um::winuser::{
     SPI_SETDESKWALLPAPER,
 };
 
-pub struct WindowsBackgroundSetter;
+pub struct WindowsWallpaperSetter;
 
 /// Behavior changing the desktop background of the windows system
-impl BackgroundSetter for WindowsBackgroundSetter {
+impl WallpaperSetter for WindowsWallpaperSetter {
     /// Change the background image of the windows system
     fn set_background(&self, image_path: &str) -> Result<()> {
         let mut path: Vec<u16> = OsStr::new(image_path)

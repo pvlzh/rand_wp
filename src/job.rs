@@ -1,12 +1,15 @@
 use std::time::Duration;
 use tokio::time::sleep;
-use crate::configuration::JobConfig;
+use crate::{configuration::JobConfig, rand_img, wp_setter};
 
 pub type Result<T> = core::result::Result<T, Error>;
 
 /// Error of job execution
 #[derive(Debug)]
 pub enum Error {
+    ImageReceivingError(rand_img::Error),
+    ImageSavingError(std::io::Error),
+    WallpaperChangeError(wp_setter::Error),
 }
 
 
