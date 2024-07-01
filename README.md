@@ -1,4 +1,3 @@
-# Rand_WP
 ## Random Wallpaper Changer for Windows
 
 Rand_WP - application that periodically changes the wallpaper of your Windows desktop to a random image downloaded from the internet.
