@@ -18,4 +18,5 @@ The .config file is used to customize the behavior of Rand_WP. You can adjust th
 1. Expanding the list of categories
 2. Optimize image loading and storage
 3. Optimization of working with files
-4. Porting to linux
+4. Adding logging
+5. Porting to linux
