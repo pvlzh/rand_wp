@@ -1,5 +1,9 @@
 [package]
 name = "rand_wp"
+authors = [ "pvlzh" ]
+description = "Random Wallpaper Changer for Windows"
+repository = "https://github.com/pvlzh/rand_wp"
+license = "MIT"
 version = "0.1.0"
 edition = "2021"
 
