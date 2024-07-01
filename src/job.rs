@@ -1,27 +1,24 @@
 use std::time::Duration;
 use tokio::time::sleep;
-use crate::{configuration::JobConfig, ApplicationError};
+use crate::configuration::JobConfig;
 
-/// Job handler trait
-pub trait Job {
-    async fn execute(&self) -> Result<(), JobExecutionError>;
-}
+pub type Result<T> = core::result::Result<T, Error>;
 
 /// Error of job execution
 #[derive(Debug)]
-pub struct JobExecutionError(String);
+pub enum Error {
+}
 
-/// Convert JobExecutionError into ApplicationError
-impl From<JobExecutionError> for ApplicationError{
-    fn from(error: JobExecutionError) -> Self {
-        Self(error.0.to_string())
-    }
+
+/// Job handler trait
+pub trait Job {
+    async fn execute(&self) -> Result<()>;
 }
 
 /// Jobs runner
 pub struct JobRunner<TJob> where TJob: Job  {
-    config: JobConfig,
     job: TJob,
+    config: JobConfig,
 }
 
 impl<TJob: Job> JobRunner<TJob> {
@@ -31,7 +28,7 @@ impl<TJob: Job> JobRunner<TJob> {
     }
 
     /// Run background job
-    pub async fn run(&self) -> Result<(), JobExecutionError> {
+    pub async fn run(&self) -> Result<()> {
         loop {
             self.job.execute().await?; // todo: write into log and continue
             sleep(Duration::from_secs(self.config.interval_sec)).await;

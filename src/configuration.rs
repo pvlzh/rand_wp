@@ -1,20 +1,48 @@
 use std::{fs, path::Path};
 use serde::{Serialize, Deserialize};
-use crate::ApplicationError;
+
+pub type Result<T> = core::result::Result<T, Error>;
+
+#[derive(Debug)]
+/// Errors of module configuration
+pub enum Error {
+    /// Configuration is invalid
+    ReadConfigurationError(toml::de::Error),
+    SaveConfigurationError(toml::ser::Error),
+    IoError(std::io::Error),
+}
+
+impl From<toml::de::Error> for Error {
+    fn from(error: toml::de::Error) -> Self {
+        Self::ReadConfigurationError(error)
+    }
+}
+
+impl From<toml::ser::Error> for Error {
+    fn from(error: toml::ser::Error) -> Self {
+        Self::SaveConfigurationError(error)
+    }
+}
+
+impl From<std::io::Error> for Error {
+    fn from(error: std::io::Error) -> Self {
+        Self::IoError(error)
+    }
+}
 
 /// Initializing app configuration
-pub fn init() -> Result<AppConfig, ConfigurationError> {
+pub fn init() -> Result<AppConfig> {
     let config: AppConfig;
     
     let config_path = Path::new(".config");
     if config_path.exists() {
-        let content = fs::read_to_string(config_path)?;
+        let content = fs::read_to_string(config_path)?; // todo: tokio async
         config = toml::from_str(&content)?;
     }
     else {
         config = AppConfig::default();
         let content = toml::to_string(&config)?;
-        fs::write(config_path, &content)?;
+        fs::write(config_path, &content)?; // todo: tokio async
     }
 
     return Ok(config);
@@ -53,51 +81,5 @@ impl Default for AppConfig {
                 interval_sec: 600,
             } 
         }
-    }
-}
-
-
-/// Configuration errors
-pub enum ConfigurationError {
-    /// Configuration is invalid
-    InvalidConfiguration(String),
-    IoError(String),
-}
-
-/// Convert ConfigurationError into ApplicationError
-impl From<ConfigurationError> for ApplicationError {
-    fn from(error: ConfigurationError) -> Self {
-        let error = match error {
-            ConfigurationError::InvalidConfiguration(message) => message,
-            ConfigurationError::IoError(message) => message,
-        };
-        Self(error.to_string())
-    }
-}
-
-/// Convert io Error into ConfigurationError
-impl From<std::io::Error> for ConfigurationError {
-    fn from(value: std::io::Error) -> Self {
-        Self::IoError(value.to_string())
-    }
-}
-
-/// Convert deserialization Error into ConfigurationError
-impl From<toml::de::Error> for ConfigurationError {
-    fn from(error: toml::de::Error) -> Self {
-        Self::InvalidConfiguration(error.message().to_string())
-    }
-}
-/// Convert serialization Error into ConfigurationError
-impl From<toml::ser::Error> for ConfigurationError {
-    fn from(error: toml::ser::Error) -> Self {
-        Self::InvalidConfiguration(error.to_string())
-    }
-}
-
-/// Convert String into ConfigurationError
-impl From<String> for ConfigurationError {
-    fn from(message: String) -> Self {
-        Self::InvalidConfiguration(message)
     }
 }

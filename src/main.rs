@@ -1,16 +1,19 @@
 mod configuration;
 mod job;
+mod bg_setter;
 
-use job::{Job, JobExecutionError, JobRunner};
+use job::{Job, JobRunner};
+
+pub type Result<T> = core::result::Result<T, Error>;
 
 #[tokio::main]
-async fn main() -> Result<(), ApplicationError> {
+async fn main() -> Result<()> {
     let config = configuration::init()?;
 
     let job = Printer;
-    let runner = JobRunner::new(job, config.job);
-
-    _ = runner.run().await;
+    JobRunner::new(job, config.job)
+        .run()
+        .await?;
 
     Ok(())
 }
@@ -19,12 +22,27 @@ async fn main() -> Result<(), ApplicationError> {
 pub struct Printer;
 
 impl Job for Printer{
-    async fn execute(&self) -> Result<(), JobExecutionError>{
+    async fn execute(&self) -> job::Result<()>{
         println!("Hello every 10 sec");
         Ok(())
     }
 }
 
-/// Base error
+/// Application error
 #[derive(Debug)]
-pub struct ApplicationError(String);
+pub enum Error {
+    ConfigurationError(configuration::Error),
+    BackgroundJobExecutionError(job::Error),
+}
+
+impl From<configuration::Error> for Error {
+    fn from(error: configuration::Error) -> Self {
+        Self::ConfigurationError(error)
+    }
+}
+
+impl From<job::Error> for Error {
+    fn from(error: job::Error) -> Self {
+        Self::BackgroundJobExecutionError(error)
+    }
+}
