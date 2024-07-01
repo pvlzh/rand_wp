@@ -14,7 +14,7 @@ The .config file is used to customize the behavior of Rand_WP. You can adjust th
 * `interval` - the frequency (in seconds) between which the desktop background image changes
 
 
-The following improvements are planned:
+### The following improvements are planned
 1. Expanding the list of categories
 2. Optimize image loading and storage
 3. Optimization of working with files
