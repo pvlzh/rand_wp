@@ -88,8 +88,44 @@ impl RequestBody {
     /// ctor
     pub fn new(category: &str, resolution: &str) -> Self {
         let catalog = match category {
-            "landscapes" => "13", // todo: fill match arms
-            _ => panic!("category wtf") 
+            "abstraction" => "1",
+            "ai-art" => "108",
+            "animals" => "5",
+            "anime" => "25",
+            "aviation" => "29",
+            "cars" => "9",
+            "cats" => "7",
+            "city" => "2",
+            "dogs" => "17",
+            "fantasy" => "20",
+            "films" => "21",
+            "flowers" => "22",
+            "food" => "34",
+            "games" => "24",
+            "girls" => "3",
+            "hi-tech" => "30",
+            "holidays" => "23",
+            "interior" => "33",
+            "landscapes" => "13",
+            "macro" => "8",
+            "mans" => "10",
+            "minimalism" => "27",
+            "miscellanea" => "4",
+            "mood" => "11",
+            "music" => "31",
+            "nature" => "14",
+            "new-year" => "28",
+            "painting" => "35",
+            "rendering" => "15",
+            "situations" => "16",
+            "space" => "6",
+            "sports" => "18",
+            "style" => "19",
+            "textures" => "26",
+            "weapon" => "32",
+
+            "all" => "",
+            _ => panic!("Unknown category has been selected") 
         };
 
         Self { 
