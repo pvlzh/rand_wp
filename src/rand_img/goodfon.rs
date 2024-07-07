@@ -5,31 +5,19 @@ use surf::http::convert::{Deserialize, Serialize};
 
 pub type Result<T> = core::result::Result<T, Error>;
 
-/// Error of job execution
+/// Errors of the GoodFon image provider
 #[derive(Debug)]
 pub enum Error {
     HttpError(surf::http::Error)
 }
 
-impl From<Error> for super::Error {
-    fn from(error: Error) -> Self {
-        Self::GoodFonProviderError(error)
-    }
-}
-
-impl From<surf::http::Error> for Error {
-    fn from(error: surf::http::Error) -> Self {
-        Self::HttpError(error)
-    }
-}
-
-/// 
+/// The provider of images from the goodfon website
 pub struct GoodFonProvider{
     config: ImageConfig
 }
 
 impl GoodFonProvider {
-    /// 
+    /// Create a new instance of the image provider
     pub fn new(config: ImageConfig) -> Self{
         Self { config }
     }
@@ -37,7 +25,7 @@ impl GoodFonProvider {
 
 /// 
 impl ImageProvider for GoodFonProvider{
-    ///
+    /// Get an image from Goodfon website
     async fn get_image(&self) -> super::Result<ImageBytes> {
         let category = &self.config.category;
         let resolution = &self.config.resolution;
@@ -85,7 +73,7 @@ struct RequestBody {
 }
 
 impl RequestBody {
-    /// ctor
+    /// Create a new instance of the request to the Goodfon website 
     pub fn new(category: &str, resolution: &str) -> Self {
         let catalog = match category {
             "abstraction" => "1",
@@ -149,4 +137,16 @@ struct ResultBody {
 #[derive(Deserialize)]
 struct ImageInfo {
     img: String
+}
+
+impl From<Error> for super::Error {
+    fn from(error: Error) -> Self {
+        Self::GoodFonProviderError(error)
+    }
+}
+
+impl From<surf::http::Error> for Error {
+    fn from(error: surf::http::Error) -> Self {
+        Self::HttpError(error)
+    }
 }

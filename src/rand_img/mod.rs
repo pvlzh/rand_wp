@@ -4,23 +4,22 @@ pub mod goodfon;
 
 pub type Result<T> = core::result::Result<T, Error>;
 
-/// Error of job execution
+/// Errors of the image provider
 #[derive(Debug)]
 pub enum Error {
     GoodFonProviderError(goodfon::Error)
 }
 
-/// 
+/// Image provider behavior
 pub trait ImageProvider {
-    ///
+    /// Get an image
     async fn get_image(&self) -> Result<ImageBytes>; 
 }
 
 pub struct ImageBytes(Vec<u8>);
 
 impl ImageBytes {
-
-    ///
+    /// Save image data in the specified path
     pub fn save(&self, path: &str) -> core::result::Result<(), std::io::Error> {
         let path = Path::new(path);
         if path.exists() {
