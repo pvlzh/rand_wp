@@ -53,7 +53,7 @@ The .config file is used to customize the behavior of Rand_WP. You can adjust th
 
 ### The following improvements are planned
 1. Expanding the list of categories [✔️]
-2. Optimize image loading and storage [ _ ]
-3. Optimization of working with files [ _ ]
+2. Optimization of working with files [✔️]
+3. Optimize image loading and storage [ _ ]
 4. Adding logging [ _ ]
 5. Porting to linux [ _ ]
