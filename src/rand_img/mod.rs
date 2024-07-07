@@ -1,4 +1,6 @@
-use std::{fs::{self, File}, io::Write as _, path::Path};
+use std::path::Path;
+use tokio::{fs::{self, File}, io::AsyncWriteExt};
+
 
 pub mod goodfon;
 
@@ -20,14 +22,14 @@ pub struct ImageBytes(Vec<u8>);
 
 impl ImageBytes {
     /// Save image data in the specified path
-    pub fn save(&self, path: &str) -> core::result::Result<(), std::io::Error> {
+    pub async fn save(&self, path: &str) -> core::result::Result<(), std::io::Error> {
         let path = Path::new(path);
         if path.exists() {
-            fs::remove_file(path)?;
+            fs::remove_file(path).await?;
         }
 
-        let mut file = File::create(path)?; // todo: tokio async
-        file.write_all(&self.0)?;
+        let mut file = File::create(path).await?;
+        file.write_all(&self.0).await?;
 
         Ok(())
     }

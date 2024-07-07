@@ -21,7 +21,7 @@ pub enum Error {
 }
 #[tokio::main]
 async fn main() -> Result<()> {
-    let config = configuration::init()?;
+    let config = configuration::init().await?;
 
     let img_provider = GoodFonProvider::new(config.image);
     let wp_setter = WindowsWallpaperSetter;
@@ -59,7 +59,7 @@ impl<IP: ImageProvider, WS: WallpaperSetter> Job for WallpaperChanger<IP, WS> {
 
         let image_bytes = image_provider.get_image().await?;
         
-        if let Err(error) = image_bytes.save(&current_image_path) {
+        if let Err(error) = image_bytes.save(&current_image_path).await {
             return Err(job::Error::ImageSavingError(error));
         }
 

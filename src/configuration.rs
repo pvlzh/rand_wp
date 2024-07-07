@@ -1,5 +1,6 @@
-use std::{fs, path::Path};
+use std::path::Path;
 use serde::{Serialize, Deserialize};
+use tokio::fs;
 
 pub type Result<T> = core::result::Result<T, Error>;
 
@@ -31,18 +32,18 @@ impl From<std::io::Error> for Error {
 }
 
 /// Initializing app configuration
-pub fn init() -> Result<AppConfig> {
+pub async fn init() -> Result<AppConfig> {
     let config: AppConfig;
     
     let config_path = Path::new(".config");
     if config_path.exists() {
-        let content = fs::read_to_string(config_path)?; // todo: tokio async
+        let content = fs::read_to_string(config_path).await?;
         config = toml::from_str(&content)?;
     }
     else {
         config = AppConfig::default();
         let content = toml::to_string(&config)?;
-        fs::write(config_path, &content)?; // todo: tokio async
+        fs::write(config_path, &content).await?;
     }
 
     return Ok(config);
